@@ -17,8 +17,10 @@ public:
 };
 
 class command {
+public:
+    vector<string> variations;
     command(vector<string> in) {
-
+        variations = in;
     }
 };
 
