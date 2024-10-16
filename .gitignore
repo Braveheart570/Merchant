@@ -429,3 +429,5 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+.vs/Merchant/v17/.suo
+.vs/Merchant/v17/Browse.VC.db
