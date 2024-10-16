@@ -1,6 +1,2 @@
 ﻿  Merchant.cpp
-E:\GitHub Repos\Merchant\Merchant.cpp(20,5): error C2955: 'std::vector': use of class template requires template argument list
-      C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.41.34120\include\vector(429,7):
-      see declaration of 'std::vector'
-  
-E:\GitHub Repos\Merchant\Merchant.cpp(21,5): error C2533: 'command': constructors not allowed a return type
+  Merchant.vcxproj -> E:\GitHub Repos\Merchant\x64\Debug\Merchant.exe
