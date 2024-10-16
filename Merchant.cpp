@@ -18,7 +18,7 @@ public:
 };
 
 int playerGold = 50;
-int merchantGold = 50;
+int merchantGold = 100;
 vector<item> playerInventory;
 vector<item> merchantInventory;
 string userIn;
@@ -28,6 +28,15 @@ void printItemVector(vector<item> input) {
     for (int i = 0; i < input.size(); i++) {
         std::cout << input[i].name << string(space-input[i].name.length(), ' ') << input[i].value << "\n";
     }
+}
+
+int getItemIndex(string itemName, vector<item> input) {
+    for (int i = 0; i < input.size(); i++) {
+        if (input[i].name == itemName) {
+            return i;
+        }
+    }
+    return -1;
 }
 
 
@@ -45,10 +54,10 @@ int main()
     merchantInventory.push_back(item("bandage", 30));
     
 
-    std::cout << "Welcome to the shop!\n";
+    std::cout << "Welcome to the shop!\nType exit at any time to go back.\n";
     
     while (true) {
-        std::cout << "\nwhat would you like to do?\n";
+        std::cout << "\nwhat would you like to do? buy or sell?\n";
         std::cin >> userIn;
         if (userIn == "exit") {
             break;
@@ -56,50 +65,78 @@ int main()
         else if (userIn == "sell") {
             std::cout << "\nPlayer Inventory\n";
             printItemVector(playerInventory);
-            bool notEnoughGold = false;
-            bool itemSold = false;
-            do {
+
+            // selling loop
+            while (true) {
                 std::cout << "\nThe Merchant has " << merchantGold << " Gold.\nWhat do you want to sell?\n";
                 std::cin >> userIn;
 
                 // manual exit
                 if (userIn == "exit") {
-                    notEnoughGold = true;
                     break;
                 }
 
-                // look for item
-                for (int c = 0; c < playerInventory.size(); c++) {
+                // check for valid item in invetory
+                int itemIndex = getItemIndex(userIn, playerInventory);
 
-                    
-                    if (userIn == playerInventory[c].name) {
-
-                        if (merchantGold < playerInventory[c].value) {
-                            notEnoughGold = true;
-                            break;
-                        }
-
-                        std::cout << "\nYou sold the " << playerInventory[c].name << ".\n";
-                        merchantInventory.push_back(playerInventory[c]);
-                        playerInventory.erase(playerInventory.begin() + c);
-                        itemSold = true;
-                        break;
-                    }
-
-                }
-                if (notEnoughGold) {
-                    std::cout << "\nMerchant cannot aford this item.";
-                }
-                else if (!itemSold) {
+                //invalid item
+                if (itemIndex < 0) {
                     std::cout << "\nItem does not exist in your inventory.";
                 }
+                // not enough gold
+                else if (merchantGold < playerInventory[itemIndex].value) {
+                    std::cout << "\nMerchant cannot aford this item.";
+                }
+                // transaction
+                else {
+                    std::cout << "\nYou sold the " << playerInventory[itemIndex].name << ".\n";
+                    merchantGold -= playerInventory[itemIndex].value;
+                    playerGold += playerInventory[itemIndex].value;
+                    merchantInventory.push_back(playerInventory[itemIndex]);
+                    playerInventory.erase(playerInventory.begin() + itemIndex);
+                    break;
+                }
                 
-            } while (!itemSold);
+            }
             
             
         }
         else if (userIn == "buy") {
+            std::cout << "\nMerchant Inventory\n";
+            printItemVector(merchantInventory);
 
+            // buying loop
+            while (true) {
+                std::cout << "\nYou have " << playerGold << " Gold.\nWhat do you want to buy?\n";
+                std::cin >> userIn;
+
+                // manual exit
+                if (userIn == "exit") {
+                    break;
+                }
+
+                // check for valid item in invetory
+                int itemIndex = getItemIndex(userIn, merchantInventory);
+
+                //invalid item
+                if (itemIndex < 0) {
+                    std::cout << "\nItem does not exist in the merchant's inventory.";
+                }
+                // not enough gold
+                else if (playerGold < merchantInventory[itemIndex].value) {
+                    std::cout << "\you cannot aford this item.";
+                }
+                // transaction
+                else {
+                    std::cout << "\nYou bought the " << merchantInventory[itemIndex].name << ".\n";
+                    playerGold -= merchantInventory[itemIndex].value;
+                    merchantGold += merchantInventory[itemIndex].value;
+                    playerInventory.push_back(merchantInventory[itemIndex]);
+                    merchantInventory.erase(merchantInventory.begin() + itemIndex);
+                    break;
+                }
+
+            }
         }
     }
 
