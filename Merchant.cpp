@@ -18,7 +18,7 @@ public:
 };
 
 int playerGold = 50;
-int merchantGold = 100;
+int merchantGold = 200;
 vector<item> playerInventory;
 vector<item> merchantInventory;
 string userIn;
@@ -50,7 +50,7 @@ int main()
     playerInventory.push_back(item("potion", 15));
 
     merchantInventory.push_back(item("gun", 150));
-    merchantInventory.push_back(item("ammo x10", 15));
+    merchantInventory.push_back(item("ammo", 15));
     merchantInventory.push_back(item("bandage", 30));
     
 
