@@ -19,53 +19,67 @@ public:
     
 };
 
+
+
+vector<item> playerInventory = {
+    item("sword", 100, 1),
+    item("sheild", 50, 1),
+    item("potion", 15, 3),
+    item("gun", 150, 0),
+    item("ammo_box", 15, 0),
+    item("bandage", 30, 0)
+};
+vector<item> merchantInventory = {
+    item("sword", 100, 0),
+    item("sheild", 50, 0),
+    item("potion", 15, 0),
+    item("gun", 150, 1),
+    item("ammo_box", 15, 5),
+    item("bandage", 30, 2)
+};
+
+
+
 int playerGold = 50;
-int merchantGold = 200;
-vector<item> playerInventory;
-vector<item> merchantInventory;
+int merchantGold = 180;
 string userIn;
 
-void printInventory(vector<item> input);
+
+
+
+void printInventory(vector<item> input, bool showQuantityZero);
 int getItemIndex(string itemName, vector<item> input);
 
 
 int main()
 {
-    
-    merchantInventory.push_back(item("sword", 100, 0));
-    merchantInventory.push_back(item("sheild", 50, 0));
-    merchantInventory.push_back(item("potion", 15, 1));
-    merchantInventory.push_back(item("gun", 150, 1));
-    merchantInventory.push_back(item("ammo_box", 15, 5));
-    merchantInventory.push_back(item("bandage", 30, 2));
-
-
-    playerInventory.push_back(item("sword",100,1));
-    playerInventory.push_back(item("sheild", 50,1));
-    playerInventory.push_back(item("potion", 15,1));
-    playerInventory.push_back(item("gun", 150,0));
-    playerInventory.push_back(item("ammo_box", 15,0));
-    playerInventory.push_back(item("bandage", 30,0));
 
     std::cout << "Welcome to the shop!\nType exit at any time to go back.\n";
     
+
+    // Main Loop
     while (true) {
         std::cout << "\nWhat would you like to do? Exit, buy, sell, or view inventory with \"inv\"?\n";
         std::cin >> userIn;
         system("CLS");
+
+        // exit condition for loop
         if (userIn == "exit") {
             break;
         }
+        // view inventory
         else if(userIn == "inv") {
-            printInventory(playerInventory);
+            printInventory(playerInventory, false);
+            std::cout << "\nYou have " << playerGold << " Gold\n";
         }
+        // sell items
         else if (userIn == "sell") {
             std::cout << "\nPlayer Inventory\n";
-            printInventory(playerInventory);
+            printInventory(playerInventory, false);
 
             // selling loop
             while (true) {
-                std::cout << "\nThe Merchant has " << merchantGold << " Gold.\nWhat do you want to sell?\n";
+                std::cout << "\nThe merchant has " << merchantGold << " Gold.\nWhat do you want to sell?\n";
                 std::cin >> userIn;
 
                 // manual exit
@@ -76,9 +90,9 @@ int main()
                 // check for valid item in invetory
                 int itemIndex = getItemIndex(userIn, playerInventory);
 
-                //invalid item
-                if (itemIndex < 0) {
-                    std::cout << "\nItem does not exist in your inventory.";
+                //invalid item or quantity 0
+                if (itemIndex < 0 || playerInventory[itemIndex].quantity <= 0) {
+                    std::cout << "\nYou don't have that item.";
                 }
                 // not enough gold
                 else if (merchantGold < playerInventory[itemIndex].value) {
@@ -86,6 +100,7 @@ int main()
                 }
                 // transaction
                 else {
+                    system("CLS");
                     std::cout << "\nYou sold the " << playerInventory[itemIndex].name << ".\n";
                     merchantGold -= playerInventory[itemIndex].value;
                     playerGold += playerInventory[itemIndex].value;
@@ -98,9 +113,10 @@ int main()
             
             
         }
+        //buy items
         else if (userIn == "buy") {
             std::cout << "\nMerchant Inventory\n";
-            printInventory(merchantInventory);
+            printInventory(merchantInventory,true);
 
             // buying loop
             while (true) {
@@ -115,18 +131,21 @@ int main()
                 // check for valid item in invetory
                 int itemIndex = getItemIndex(userIn, merchantInventory);
 
-
-
-                //invalid item or item quantity 0
-                if (itemIndex < 0 || merchantInventory[itemIndex].quantity <=0) {
-                    std::cout << "\nItem does not exist in the merchant's inventory.";
+                //invalid item
+                if (itemIndex < 0 ) {
+                    std::cout << "\nThe merchant does not have that item.";
+                }
+                // sold out
+                else if (merchantInventory[itemIndex].quantity <= 0) {
+                    std::cout << "\nThat item is sold out";
                 }
                 // not enough gold
                 else if (playerGold < merchantInventory[itemIndex].value) {
-                    std::cout << "\you cannot aford this item.";
+                    std::cout << "\You cannot aford this item.";
                 }
                 // transaction
                 else {
+                    system("CLS");
                     std::cout << "\nYou bought the " << merchantInventory[itemIndex].name << ".\n";
                     playerGold -= merchantInventory[itemIndex].value;
                     merchantGold += merchantInventory[itemIndex].value;
@@ -139,23 +158,37 @@ int main()
         }
     }
 
-
+    return 0;
 
 }
-
-void printInventory(vector<item> input) {
+// an inventory vector with or without out of stock items.
+void printInventory(vector<item> input, bool showQuantityZero) {
     int space = 12;
+    string quantity = "";
 
+    //header
     std::cout << "\nItem        Value       Amount\n";
     std::cout << string(space * 3, '-') << "\n";
+
+    //items
     for (int i = 0; i < input.size(); i++) {
+
+        //Handling quantity zero
         if (input[i].quantity < 1) {
-            continue;
+            if (showQuantityZero == false) {
+                continue;
+            }
+            quantity = "SOLD OUT";
         }
-        std::cout << input[i].name << string(space - input[i].name.length(), ' ') << input[i].value << string(space - std::to_string(input[i].value).length(), ' ') << input[i].quantity << "\n";
+        else{
+            quantity = std::to_string(input[i].quantity);
+        }
+
+        std::cout << input[i].name << string(space - input[i].name.length(), ' ') << input[i].value << string(space - std::to_string(input[i].value).length(), ' ') << quantity << "\n";
     }
 }
 
+// returns -1 if there is no index found
 int getItemIndex(string itemName, vector<item> input) {
     for (int i = 0; i < input.size(); i++) {
         if (input[i].name == itemName) {
