@@ -10,9 +10,17 @@ class item {
 public:
     string name;
     int value;
+    int quantity;
     item(string nameIn, int valueIn) {
         name = nameIn;
         value = valueIn;
+        quantity = 1;
+    }
+
+    item(string nameIn, int valueIn, int quantityIn) {
+        name = nameIn;
+        value = valueIn;
+        quantity = quantityIn;
     }
     
 };
@@ -23,21 +31,8 @@ vector<item> playerInventory;
 vector<item> merchantInventory;
 string userIn;
 
-void printItemVector(vector<item> input) {
-    int space = 12;
-    for (int i = 0; i < input.size(); i++) {
-        std::cout << input[i].name << string(space-input[i].name.length(), ' ') << input[i].value << "\n";
-    }
-}
-
-int getItemIndex(string itemName, vector<item> input) {
-    for (int i = 0; i < input.size(); i++) {
-        if (input[i].name == itemName) {
-            return i;
-        }
-    }
-    return -1;
-}
+void printInventory(vector<item> input);
+int getItemIndex(string itemName, vector<item> input);
 
 
 int main()
@@ -50,7 +45,7 @@ int main()
     playerInventory.push_back(item("potion", 15));
 
     merchantInventory.push_back(item("gun", 150));
-    merchantInventory.push_back(item("ammo", 15));
+    merchantInventory.push_back(item("ammo box", 15, 3));
     merchantInventory.push_back(item("bandage", 30));
     
 
@@ -64,7 +59,7 @@ int main()
         }
         else if (userIn == "sell") {
             std::cout << "\nPlayer Inventory\n";
-            printItemVector(playerInventory);
+            printInventory(playerInventory);
 
             // selling loop
             while (true) {
@@ -103,7 +98,7 @@ int main()
         }
         else if (userIn == "buy") {
             std::cout << "\nMerchant Inventory\n";
-            printItemVector(merchantInventory);
+            printInventory(merchantInventory);
 
             // buying loop
             while (true) {
@@ -141,4 +136,24 @@ int main()
     }
 
 
+
+}
+
+void printInventory(vector<item> input) {
+    int space = 12;
+
+    std::cout << "\nItem        Value       Amount\n";
+    std::cout << string(space * 3, '-') << "\n";
+    for (int i = 0; i < input.size(); i++) {
+        std::cout << input[i].name << string(space - input[i].name.length(), ' ') << input[i].value << string(space - std::to_string(input[i].value).length(), ' ') << input[i].quantity << "\n";
+    }
+}
+
+int getItemIndex(string itemName, vector<item> input) {
+    for (int i = 0; i < input.size(); i++) {
+        if (input[i].name == itemName) {
+            return i;
+        }
+    }
+    return -1;
 }
