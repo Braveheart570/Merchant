@@ -11,12 +11,6 @@ public:
     string name;
     int value;
     int quantity;
-    item(string nameIn, int valueIn) {
-        name = nameIn;
-        value = valueIn;
-        quantity = 1;
-    }
-
     item(string nameIn, int valueIn, int quantityIn) {
         name = nameIn;
         value = valueIn;
@@ -38,24 +32,32 @@ int getItemIndex(string itemName, vector<item> input);
 int main()
 {
     
+    merchantInventory.push_back(item("sword", 100, 0));
+    merchantInventory.push_back(item("sheild", 50, 0));
+    merchantInventory.push_back(item("potion", 15, 1));
+    merchantInventory.push_back(item("gun", 150, 1));
+    merchantInventory.push_back(item("ammo_box", 15, 5));
+    merchantInventory.push_back(item("bandage", 30, 2));
 
 
-    playerInventory.push_back(item("sword",100));
-    playerInventory.push_back(item("sheild", 50));
-    playerInventory.push_back(item("potion", 15));
-
-    merchantInventory.push_back(item("gun", 150));
-    merchantInventory.push_back(item("ammo box", 15, 3));
-    merchantInventory.push_back(item("bandage", 30));
-    
+    playerInventory.push_back(item("sword",100,1));
+    playerInventory.push_back(item("sheild", 50,1));
+    playerInventory.push_back(item("potion", 15,1));
+    playerInventory.push_back(item("gun", 150,0));
+    playerInventory.push_back(item("ammo_box", 15,0));
+    playerInventory.push_back(item("bandage", 30,0));
 
     std::cout << "Welcome to the shop!\nType exit at any time to go back.\n";
     
     while (true) {
-        std::cout << "\nwhat would you like to do? buy or sell?\n";
+        std::cout << "\nWhat would you like to do? Exit, buy, sell, or view inventory with \"inv\"?\n";
         std::cin >> userIn;
+        system("CLS");
         if (userIn == "exit") {
             break;
+        }
+        else if(userIn == "inv") {
+            printInventory(playerInventory);
         }
         else if (userIn == "sell") {
             std::cout << "\nPlayer Inventory\n";
@@ -87,8 +89,8 @@ int main()
                     std::cout << "\nYou sold the " << playerInventory[itemIndex].name << ".\n";
                     merchantGold -= playerInventory[itemIndex].value;
                     playerGold += playerInventory[itemIndex].value;
-                    merchantInventory.push_back(playerInventory[itemIndex]);
-                    playerInventory.erase(playerInventory.begin() + itemIndex);
+                    playerInventory[itemIndex].quantity--;
+                    merchantInventory[itemIndex].quantity++;
                     break;
                 }
                 
@@ -113,8 +115,10 @@ int main()
                 // check for valid item in invetory
                 int itemIndex = getItemIndex(userIn, merchantInventory);
 
-                //invalid item
-                if (itemIndex < 0) {
+
+
+                //invalid item or item quantity 0
+                if (itemIndex < 0 || merchantInventory[itemIndex].quantity <=0) {
                     std::cout << "\nItem does not exist in the merchant's inventory.";
                 }
                 // not enough gold
@@ -126,8 +130,8 @@ int main()
                     std::cout << "\nYou bought the " << merchantInventory[itemIndex].name << ".\n";
                     playerGold -= merchantInventory[itemIndex].value;
                     merchantGold += merchantInventory[itemIndex].value;
-                    playerInventory.push_back(merchantInventory[itemIndex]);
-                    merchantInventory.erase(merchantInventory.begin() + itemIndex);
+                    playerInventory[itemIndex].quantity++;
+                    merchantInventory[itemIndex].quantity--;
                     break;
                 }
 
@@ -145,6 +149,9 @@ void printInventory(vector<item> input) {
     std::cout << "\nItem        Value       Amount\n";
     std::cout << string(space * 3, '-') << "\n";
     for (int i = 0; i < input.size(); i++) {
+        if (input[i].quantity < 1) {
+            continue;
+        }
         std::cout << input[i].name << string(space - input[i].name.length(), ' ') << input[i].value << string(space - std::to_string(input[i].value).length(), ' ') << input[i].quantity << "\n";
     }
 }
