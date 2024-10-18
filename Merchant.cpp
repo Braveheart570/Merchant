@@ -6,6 +6,46 @@ using std::string;
 using std::vector;
 
 
+
+class diologueSegment {
+
+public:
+
+
+};
+
+class actor {
+public:
+    vector<item> inventory;
+    string actorName;
+    actor(string actorNameIn) {
+        actorName = actorNameIn;
+    };
+    void printInv() {
+        int space = 12;
+        //header
+        std::cout << "\nItem        Value       Amount\n";
+        std::cout << string(space * 3, '-') << "\n";
+        //items
+        for (int i = 0; i < inventory.size(); i++) {
+
+            std::cout << inventory[i].name << string(space - inventory[i].name.length(), ' ') << inventory[i].value << string(space - std::to_string(inventory[i].value).length(), ' ') << inventory[i].quantity << "\n";
+        }
+    }
+};
+
+class npc : actor {
+
+};
+
+class merchant : npc {
+
+};
+
+class player : actor {
+
+};
+
 class item {
 public:
     string name;
